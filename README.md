@@ -1,6 +1,6 @@
 # Chips-Bits
 
-![project logo (this one for is taken from basecamp - a project management service)](https://github.com/arik-le/Chips-Bits/blob/master/stock-photo--d-illustration-of-computer-chip-over-digital-background-with-ai-sign-and-binary-code-inside-539112574.jpg)
+![project logo (this one for is taken from basecamp - a project management service)](https://github.com/arik-le/Chips-Bits/blob/master/Images/stock-photo--d-illustration-of-computer-chip-over-digital-background-with-ai-sign-and-binary-code-inside-539112574.jpg)
 
 
 ## Description
