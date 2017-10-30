@@ -41,18 +41,10 @@ This project is developed as part of the requirements for a **software engineeri
 
 Please visit our wiki for furthur project info: 
 
-### [User Manual](https://github.com/arik-le/A-Home-For-Every-Child/wiki/User-Manual) 
-
-
-### [Team Page](https://github.com/arik-le/A-Home-For-Every-Child/wiki/Team-Page)
+### [Team Page](https://github.com/arik-le/Chips-Bits/wiki/Team-Page)
 
 ### Project Documents
-- [Project Idea](docs/idea.pdf) ([Presentation](docs/idea-slides.pdf))
-- [Project Inception](../../wiki/inception)
-- [Software Requirements Specification](https://github.com/arik-le/A-Home-For-Every-Child/wiki/Software-Requirement-Specification)
-- [Software Design Specification](../../wiki/sds)
-- [Organization website](http://www.bily.org.il)
-- [Organization facebook](https://www.facebook.com/BilyIsrael)
+
 
 ### Project Diary and Scheudle
 Using [Trello app site](https://trello.com/b/3eGIbgko/project-schedule)
