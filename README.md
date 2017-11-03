@@ -13,19 +13,15 @@ We're trying to use the best tools and practices in order to produce a quality e
 
 |Category|Status|
 |---|---|
-| Version Control System| git & github |
-| Recommended IDE | [Arduino](https://www.arduino.cc/en/Guide/Windows) |
+| Version Control System| ![git & github](https://img.shields.io/badge/Github-open-blue.svg)|
+| Recommended IDE | [![Arduino](https://img.shields.io/badge/Arduino-IDE-lightgrey.svg)](https://www.arduino.cc/en/Guide/Windows) |
 | Build Status (CI) |  [![Build Status](https://travis-ci.org/jce-il/project-template.svg?branch=master)](https://travis-ci.org/jce-il/project-template) |
-| Dependencies | [![David](https://img.shields.io/david/dev/idleberg/vscode-badges.svg?style=flat-square)](https://david-dm.org/jce-il/project-template?type=dev) |
 | License | [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/arik-le/Chips-Bits/blob/master/LICENSE) |
-| Test Coverege | [![codecov.io](https://codecov.io/github/jce-il/project-template/coverage.svg?branch=master)](https://codecov.io/github/jce-il/project-template?branch=master) |
-| Code Quality | [![Code Climate](https://codeclimate.com/github/jce-il/project-template.svg)](https://codeclimate.com/github/jce-il/project-template) |
 | Code Style | [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/jce-il/project-template) |
 | Current Release | [![Current Version](https://img.shields.io/github/release/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/releases) |
 | Issues | [![GitHub issues](https://img.shields.io/github/issues/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/issues) |
 | Project Management Board| [here](https://github.com/arik-le/Chips-Bits/projects/1) |
 | Contributors | [![GitHub contributors](https://img.shields.io/github/contributors/jce-il/project-template.svg)](https://github.com/arik-le/Chips-Bits/graphs/contributors)|
-| Security | [![Known Vulnerabilities](https://snyk.io/test/github/jce-il/project-template/badge.svg)](https://snyk.io/test/github/jce-il/project-template) |
 | Documnetation | [![Inline docs](http://inch-ci.org/github/jce-il/project-template.svg?branch=master)](http://inch-ci.org/github/jce-il/project-template) |
 
 
