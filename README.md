@@ -4,6 +4,7 @@
 
 
 ## Description
+Our goal is to investigate, explore and develop a general protocol for transmitting information to IOT devices.
 
 
 
