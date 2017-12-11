@@ -23,7 +23,7 @@ We're trying to use the best tools and practices in order to produce a quality e
 | Issues | [![GitHub issues](https://img.shields.io/github/issues/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/issues) |
 | Project Management Board| [![here](https://img.shields.io/badge/Project%20-Board-green.svg)](https://github.com/arik-le/Chips-Bits/projects/1) |
 | Contributors | [![GitHub contributors](https://img.shields.io/github/contributors/jce-il/project-template.svg)](https://github.com/arik-le/Chips-Bits/graphs/contributors)|
-| Documnetation | [![Inline docs](http://inch-ci.org/github/jce-il/project-template.svg?branch=master)](http://inch-ci.org/github/jce-il/project-template) |
+| Documnetation | [![Inline docs](http://inch-ci.org/github/jce-il/project-template.svg?branch=master)](https://github.com/arik-le/Chips-Bits/wiki) |
 
 
 ## Disclaimer
