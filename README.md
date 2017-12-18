@@ -34,8 +34,8 @@ Please visit our wiki for furthur project info:
 ### [Team Page](https://github.com/arik-le/Chips-Bits/wiki/Team-Page)
 
 ### Project Documents
-[Propsal Iteration](https://github.com/arik-le/Chips-Bits/wiki/Proposal-report)
-[Use Cases](https://github.com/arik-le/Chips-Bits/wiki/Use-Cases)
+* [Propsal Iteration](https://github.com/arik-le/Chips-Bits/wiki/Proposal-report)
+* [Use Cases](https://github.com/arik-le/Chips-Bits/wiki/Use-Cases)
 
 ### Project Diary and Scheudle
 Using [Trello app site](https://trello.com/b/3eGIbgko/project-schedule)
