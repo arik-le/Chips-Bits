@@ -1,6 +1,6 @@
-# Chips-Bits
+![project logo (this one for is taken from basecamp - a project management service)](https://github.com/arik-le/Chips-Bits/blob/master/Images/3d23069b-0ccc-4703-b4bc-26e44ebcc98b.png)  
 
-![project logo (this one for is taken from basecamp - a project management service)](https://github.com/arik-le/Chips-Bits/blob/master/Images/3d23069b-0ccc-4703-b4bc-26e44ebcc98b.png)
+![project logo (this one for is taken from basecamp - a project management service)](https://github.com/arik-le/Chips-Bits/blob/master/Images/chipsb.PNG)
 
 
 ## Description
