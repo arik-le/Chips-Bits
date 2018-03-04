@@ -2,12 +2,12 @@
 
 
 ## Description
-Our goal is to investigate, explore and develop a general protocol for transmitting information to IOT devices.
-The protocol will promote the transmission of information in a minimal, efficient and real-time manner.
-Our goal in this project is to enable a system operation (which consists of sensors and IOT chips) as normal and as clean as possible.
-Our desire is that the information will be transferred only when necessary and perceived as an exceptional situation in the system and requires human intervention.
-The protocol will operate independently and completely autonomously.
-Our thoughts are that the protocol activity will help save the cost of advanced and powerful storage servers and also use satellites for systems that use this communication networks.
+* Our goal is to investigate, explore and develop a general protocol for transmitting information to IOT devices.
+* The protocol will promote the transmission of information in a minimal, efficient and real-time manner.
+* Our goal in this project is to enable a system operation (which consists of sensors and IOT chips) as normal and as clean as possible.
+* Our desire is that the information will be transferred only when necessary and perceived as an exceptional situation in the system and requires human intervention.
+* The protocol will operate independently and completely autonomously.
+* Our thoughts are that the protocol activity will help save the cost of advanced and powerful storage servers and also use satellites for systems that use this communication networks.
 
 
 
