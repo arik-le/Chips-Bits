@@ -39,7 +39,7 @@ while count != 24 :
         print "Distance:", distance, "cm, count is:",count  # Print distance with 0.5 cm calibration
         count += 1
     else:
-        print "Out Of Range , recalibrate"  # display out of range
+        print "Out Of Range , recalibrate    "  # display out of range
 
 delArr = [0,0,0]
 
