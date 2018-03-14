@@ -22,7 +22,7 @@ We're trying to use the best tools and practices in order to produce a quality e
 | Build Status (CI) |  [![Build Status](https://travis-ci.org/jce-il/project-template.svg?branch=master)](https://travis-ci.org/jce-il/project-template) |
 | License | [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/arik-le/Chips-Bits/blob/master/LICENSE) |
 | Code Style | [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/jce-il/project-template) |
-| Current Release | [![Current Version](https://github.com/arik-le/Chips-Bits/releases.svg)](https://github.com/arik-le/Chips-Bits/releases/tag/v0.1) |
+| Current Release | [![Current Version](https://github.com/arik-le/Chips-Bits/releases.svg?style=flat)](https://github.com/arik-le/Chips-Bits/releases) |
 | Issues | [![GitHub issues](https://img.shields.io/github/issues/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/issues) |
 | Project Management Board| [![here](https://img.shields.io/badge/Project%20-Board-green.svg)](https://github.com/arik-le/Chips-Bits/projects/1) |
 | Contributors | [![GitHub contributors](https://img.shields.io/github/contributors/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/graphs/contributors)|
