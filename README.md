@@ -19,7 +19,6 @@ We're trying to use the best tools and practices in order to produce a quality e
 |---|---|
 | Version Control System| ![git & github](https://img.shields.io/badge/Github-open-blue.svg)|
 | Recommended IDE | [![Arduino](https://img.shields.io/badge/Arduino-IDE-lightgrey.svg)](https://www.arduino.cc/en/Guide/Windows) |
-| Build Status (CI) |  [![Build Status](https://travis-ci.org/jce-il/project-template.svg?branch=master)](https://travis-ci.org/jce-il/project-template) |
 | License | [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/arik-le/Chips-Bits/blob/master/LICENSE) |
 | Code Style | [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/jce-il/project-template) |
 | Current Release | [![Current Version](https://img.shields.io/github/release/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/releases) |
