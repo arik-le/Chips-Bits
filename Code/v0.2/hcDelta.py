@@ -3,6 +3,7 @@ import time
 import sample
 import pickle
 import os.path
+import socket
 
 pin12 = mraa.Gpio(16)
 pin12.dir(mraa.DIR_IN)  # echo
@@ -141,6 +142,22 @@ def get_samples():
         s1= get_from_file("sample")
         print ("noc=",s1.noc)
         print ("sample=",s1.list)
+        connectToChip(s1)
+
+# connect to other chip
+def connectToChip(s1):
+    TCP_IP = '172.20.10.6'
+    TCP_PORT = 5005
+    BUFFER_SIZE = 1024
+    f = open(sample, "r")
+    MESSAGE = pickle.loads(s1)
+    f.close()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((TCP_IP, TCP_PORT))
+    s.send(MESSAGE)
+    data = s.recv(BUFFER_SIZE)
+    print(data)
+    s.close()
 
 print ("Distance measurement in progress")
 count = 0
@@ -151,6 +168,7 @@ maxDistance = 400
 print ("Starting mesurement for templates")
 time.sleep(2)
 get_samples()
+
 
 # create_samples(5)
 # print get_from_file("sample")
