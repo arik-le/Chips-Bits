@@ -10,6 +10,7 @@ print "Distance measurement in progress"
 count = 0
 avg = 0.0
 myRanges = []
+
 x=6
 print "Starting mesurement for templates"
 time.sleep(2)

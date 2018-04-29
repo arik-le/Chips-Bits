@@ -134,6 +134,10 @@ def add_to_file(obj,file_name):
     f.close()
 
 
+def socket_to_object(data,file_name):
+    f = open(file_name,"w")
+    f.write(data)
+
 def get_samples():
     if not os.path.isfile("sample"):
         create_samples(5)
