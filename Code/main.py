@@ -12,6 +12,7 @@ import iot_device
 import re
 import master_main
 import main_slave
+import sub_functions
 # TODO create a file that run all imports and insatll them
 
 ########################### GLOBAL VALUES   #####################
@@ -34,12 +35,7 @@ if os.name == 'nt':
     info = subprocess.STARTUPINFO()
 
 
-#   return my ip address
-def my_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    my_ip = s.getsockname()[0]
-    return my_ip
+
 
 
 # use ssh command to remote device to return the device name
@@ -82,7 +78,7 @@ def ping_host(i):
     else:
 
         ip = str(all_hosts[i])
-        my_ips = str(my_ip_address())
+        my_ips = str(sub_functions.my_ip_address())
         if my_ips != ip:
             print "check for IP: ", ip
             name = ssh(ip,'uname -n','root','123456')
@@ -97,24 +93,24 @@ def ping_host(i):
 
 
 #   run 255 threads to ping and check who is active
-for i in range(1,len(all_hosts),25):
-    for j in range(i,i+25):
-        print i,j
+
+for i in range(0,11):
+    s = v = 25
+    if i == 10:
+        v = 4
+    for j in range(i*s, (i * s) + v):
         t = threading.Thread(target=ping_host,args=(j,))
         threads.append(t)
         t.start()
     for t in threads:
         t.join()
         print('Thread {} Stopped'.format(t))
+    threads = []
 
 
-# join and wait until all threads are finished
-for t in threads:
-    t.join()
-    print('Thread {} Stopped'.format(t))
-print "after join"
+
 #   appand my device and sort by ip
-devices.append(iot_device.iot_device(socket.gethostname(), my_ip_address(), False))
+devices.append(iot_device.iot_device(socket.gethostname(), sub_functions.my_ip_address(), False))
 devices = sorted(devices, key=lambda iot_device: iot_device.ip)
 devices[0].master = True    #the lowest ip is the master
 
@@ -123,7 +119,7 @@ for h in devices:
     print h
 
 #   check if my device is the master
-if devices[0].ip == my_ip_address():
+if devices[0].ip == sub_functions.my_ip_address():
     print "i am master"
     master_main.main(devices)   #run master main function
 else:
