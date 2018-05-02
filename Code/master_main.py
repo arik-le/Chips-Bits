@@ -17,37 +17,28 @@ def my_ip_address():
 
 
 # receive data from slave function - run for each slave as a thread function
-def receive_data_slave(i,devices):
-    ip = devices[i].ip
-    name = devices[i].name
-    #try:
+def receive_data_slave(devices):
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((my_ip_address(), tcp_port))
-    s.listen(1)
-    print "listen to:"+ip
+    s.listen(10)
     while True:
         print "not listening"
-        conn, addr = s.accept()
-        data = conn.recv(b_size)
-        if not data:
-            break
-        else:
-            print "received data from:%s data is:%s " % (name, data)
-            # TODO check if data is type1:request name or type2: get data
-            conn.send("Thanks got INFO at:"+str(time.time()))  # echo
+        try:
+            conn, addr = s.accept()
+            data = conn.recv(b_size)
+            if not data:
+                break
+            else:
+                print "received data from:%s data is:%s " % (addr[0], data)
+                # TODO check if data is type1:request name or type2: get data
+                conn.send("Thanks got INFO at:"+str(time.time()))  # echo
+        except:
+            conn.close()
     conn.close()
     return
-    #except:
-     #   print "no connection with:",ip
-      #  return
+
 
 
 def main(devices):
-    slaves_threads = []
-    for i in range(1,len(devices)):
-        t = threading.Thread(target=receive_data_slave ,args=(i,devices,))
-        slaves_threads.append(t)
-        t.start()
-
-    for t in slaves_threads:
-        t.join()
+    receive_data_slave(devices)
