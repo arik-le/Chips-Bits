@@ -1,13 +1,25 @@
 #! /usr/bin/env python
 
 
+from subprocess import call
+try:
+    import ipaddress
+except:
+    print "install ipaddress"
+    call("pip install ipaddress", shell=True)
+    import ipaddress
+
+try:
+    import pexpect
+except:
+    print "install pexpect"
+    call("pip install pexpect", shell=True)
+    import pexpect
 import subprocess
-import ipaddress
 import os
 import threading
 import time
 import socket
-import pexpect
 import iot_device
 import re
 import master_main
@@ -21,7 +33,10 @@ devices = []    #IOT devices
 threads = []   #ip threads to ping and check
 
 # Prompt the user to input a network address
-net_addr = u'192.168.43.0/24'
+
+
+net_addr =sub_functions.get_range()
+# u'192.168.43.0/24'
 
 # Create the network
 ip_net = ipaddress.ip_network(net_addr)
@@ -33,9 +48,6 @@ all_hosts = list(ip_net.hosts())
 info = None
 if os.name == 'nt':
     info = subprocess.STARTUPINFO()
-
-
-
 
 
 # use ssh command to remote device to return the device name

@@ -3,13 +3,12 @@ import time
 import sample
 import pickle
 import os.path
+import os
 import sensors
 import time
 import datetime
 import socket
-from iot_device import iot_device
-
-
+import sub_functions
 TCP_PORT = 5005
 pin12 = mraa.Gpio(16)
 pin12.dir(mraa.DIR_IN)  # echo
@@ -18,17 +17,20 @@ pin13.dir(mraa.DIR_OUT)
 file_name = "hcSample"
 delay = 1
 delta = 5.0
-
+boot_time = 4
 
 class HC(sensors.Sensor):
     def __init__(self,devices):
         self.samples = []
         self.delta_list = []
-        self.neighbors_list = devices
+        self.devices=devices
 
     def get_measurement(self):
         self.reset_sensor()
-        while pin12.read() == 0:  # Check whether the ECHO is LOW
+        timeout = time.time() + boot_time
+        while pin12.read() == 0:    # Check whether the ECHO is LOW
+            if time.time() > timeout:
+                return -1
             p_start = time.time()  # Saves the last known time of LOW pulse
 
         while pin12.read() == 1:  # Check whether the ECHO is HIGH
@@ -38,14 +40,15 @@ class HC(sensors.Sensor):
 
         d = p_duration * 17150  # Multiply pulse duration by 17150 to get distance
         d = round(d, 2)  # Round to two decimal points
+        print d
         return d
 
     def reset_sensor(self):
         pin13.write(0)
-        print "Waiting For Sensor To Settle"
         pin13.write(1)
         time.sleep(0.00001)
         pin13.write(0)
+
         return
 
     def get_delta_list(self):
@@ -88,54 +91,49 @@ class HC(sensors.Sensor):
             self.samples.append(sample.Sample(m, t))
             time.sleep(delay)
 
-    def run(self,sample_range,hc_is_connect):
-        # self.neighbors_list.append(iot_device("D2", "192.168.43.154", False))
-        # self.neighbors_list.append(iot_device("D1", "192.168.43.151", True))
-        master= self.neighbors_list[0]
-        print master
-        if my_ip()is not self.neighbors_list[0]:
-            while True:
-                if hc_is_connect:
-                    sam = self.get_measurement()
-                    if not self.get_sample_by_time(5,sam):
-                        print "out of range"
-                        while True:
-                            try:
-                                print self.send_message("problem",master.ip)
-                                break
-                            except socket.error, exc:
-                                print str(exc)
+    def run(self,sample_range):
+        master = self.devices[0].ip
+        while True:
+            sam = self.get_measurement()
+            print "sam:",sam
+            if sam is -1:
+                print "hc not connect"
+            else:
+                if not self.is_in_range(5,sam):
+                    pid = os.fork()
+                    if pid is  0:
+                        self.send_in_fork(master,os.getpid(),3)
+                        print "send the problem"
+                        os._exit(0)
+                        print "not dead!!!!!!!"
                     else:
-                        try:
-                            print self.send_message(str(sam),master.ip)
-                            print master.ip
-                        except socket.error, exc:
-                            print "connection lost: "+str(exc)
-                        print "O.K"
-                    time.sleep(sample_range)
+                        print "main keep running"
                 else:
-                    self.send_message("hc isnt connect")
-        else:
-            print "i am the master"
-
-    def get_sample_by_time(self,range_s,sam):#return the sample are we want to compare
-        # this_time=get_time()
+                    print "O.K"
+            try:
+                time.sleep(sample_range)
+            except:
+                pass
+    def is_in_range(self,range_s,sam):#return the sample are we want to compare
         for d in self.delta_list:
-            if d["average"]-range_s < sam < d["average"]+range_s:
+            if float(d["average"])-range_s < sam < float(d["average"])+range_s:
                 return True
         return False
 
-    def send_message(self,message,ip):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        s.connect((ip, TCP_PORT))
-        print ip
-        print TCP_PORT
-        s.send(message)
-        s.settimeout(5)
-        data = s.recv(2048)
-        s.close()
-        return data
+    def send_in_fork(self,ip,pid,time_to_try):
+        is_transfer=False
+        print "i try to send",pid
+        for i in range(time_to_try):
+            try:
+                print sub_functions.send_message(ip,"problem res from pid :"+str(pid))
+                is_transfer=True
+                break
+            except socket.error,e:
+                 print e,os.getpid()
+        if is_transfer:
+            print "message arived",pid
+        else:
+            print "message not arived",pid
 
     def send_samples(self, ip):
         file = open(file_name)
@@ -164,7 +162,9 @@ class HC(sensors.Sensor):
             file.close()
             m= self.get_delta_from_file("_"+addr_res)
         conn.close()
+        conn.close()
         s.close()
+
 
 def my_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
