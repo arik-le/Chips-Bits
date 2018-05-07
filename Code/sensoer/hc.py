@@ -101,7 +101,7 @@ class HC(sensors.Sensor):
             else:
                 if not self.is_in_range(5,sam):
                     pid = os.fork()
-                    if pid is  0:
+                    if pid is 0:
                         self.send_in_fork(master,os.getpid(),3)
                         print "send the problem"
                         os._exit(0)
@@ -125,15 +125,15 @@ class HC(sensors.Sensor):
         print "i try to send",pid
         for i in range(time_to_try):
             try:
-                print sub_functions.send_message(ip,"problem res from pid :"+str(pid))
+                print sub_functions.send_message(ip,"problem result from pid :"+str(pid))
                 is_transfer=True
                 break
             except socket.error,e:
                  print e,os.getpid()
         if is_transfer:
-            print "message arived",pid
+            print "message arrived",pid
         else:
-            print "message not arived",pid
+            print "message not arrived",pid
 
     def send_samples(self, ip):
         file = open(file_name)
@@ -148,7 +148,7 @@ class HC(sensors.Sensor):
 
     def get_sample_from_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((my_ip(), TCP_PORT))
+        s.bind((sub_functions.my_ip_address(), TCP_PORT))
         s.listen(5)
         conn,addr=s.accept()
         while True:
@@ -166,11 +166,6 @@ class HC(sensors.Sensor):
         s.close()
 
 
-def my_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = s.getsockname()[0]
-    return ip
 
 def get_time():
     now = datetime.datetime.now()
