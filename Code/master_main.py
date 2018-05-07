@@ -3,6 +3,7 @@
 import threading
 import socket
 import time
+import datetime
 
 tcp_port = 5005
 b_size = 2048  # Normally 2048, but we want fast response
@@ -32,7 +33,7 @@ def receive_data_slave(devices):
             else:
                 print "received data from:%s data is:%s " % (addr[0], data)
                 # TODO check if data is type1:request name or type2: get data
-                conn.send("Thanks got INFO at:"+str(time.time()))  # echo
+                conn.send("Master: Thanks got INFO at:"+str(datetime.datetime.now()))  # echo
         except:
             conn.close()
     conn.close()

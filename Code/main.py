@@ -79,6 +79,7 @@ def ssh(host, cmd, user, password, timeout=10, bg_run=False):
 
 
 #   ping function to run on any host in the LAN
+pos_ips = []
 def ping_host(i):
     output = subprocess.Popen(['ping', '-c', '1', '-w', '1', str(all_hosts[i])], stdout=subprocess.PIPE,
                               startupinfo=info).communicate()[0]
@@ -92,20 +93,22 @@ def ping_host(i):
         ip = str(all_hosts[i])
         my_ips = str(sub_functions.my_ip_address())
         if my_ips != ip:
-            print "check for IP: ", ip
-            name = ssh(ip,'uname -n','root','123456')
-            if name != 'Unknown':
-                name = re.sub("[^a-zA-Z0-9]", '',name)
-                print name
-                devices.append(iot_device.iot_device(name, ip, False))
+            pos_ips.append(ip)
         return
 
+
+def ssh_start(ip):
+    name = ssh(ip,'uname -n','root','123456')
+    if name != 'Unknown':
+        name = re.sub("[^a-zA-Z0-9]", '',name)
+        print name
+        devices.append(iot_device.iot_device(name, ip, False))
+    return
 
 ################################# MAIN ################################
 
 
 #   run 255 threads to ping and check who is active
-
 for i in range(0,11):
     s = v = 25
     if i == 10:
@@ -119,23 +122,34 @@ for i in range(0,11):
         print('Thread {} Stopped'.format(t))
     threads = []
 
+# run threads on the active ip's in the LAN to get NAME
+for i in range(len(pos_ips)):
+    t = threading.Thread(target=ssh_start,args=(pos_ips[i],))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+        t.join()
+        print('Thread {} Stopped'.format(t))
+threads = []
 
 
-#   appand my device and sort by ip
+
+#  append my device and sort by ip
 devices.append(iot_device.iot_device(socket.gethostname(), sub_functions.my_ip_address(), False))
 devices = sorted(devices, key=lambda iot_device: iot_device.ip)
 devices[0].master = True    #the lowest ip is the master
 
 #   temp print
 for h in devices:
-    print h
+    print str(h)
 
 #   check if my device is the master
 if devices[0].ip == sub_functions.my_ip_address():
-    print "i am master"
+    print "i am Master"
     master_main.main(devices)   #run master main function
 else:
-    print "i am slave"
+    print "i am Slave"
     main_slave.main(devices)
 
 
