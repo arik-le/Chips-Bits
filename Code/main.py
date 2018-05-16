@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 
-from subprocess import call
+
 try:
     import ipaddress
 except:
@@ -32,8 +32,15 @@ import sub_functions
 devices = []    #IOT devices
 threads = []   #ip threads to ping and check
 
-# Prompt the user to input a network address
 
+# remove all known hosts and copy backup at known_hosts-old
+try:
+    subprocess.call("cp -av ~/.ssh/known_hosts ~/.ssh/known_hosts-old", shell=True)
+    subprocess.call("rm ~/.ssh/known_hosts", shell=True)
+except:
+    print "not needed to delete known hosts"
+
+# Prompt the user to input a network address
 
 net_addr =sub_functions.get_range()
 # u'192.168.43.0/24'
@@ -58,12 +65,12 @@ def ssh(host, cmd, user, password, timeout=10, bg_run=False):
         if bg_run:
             options += ' -f'
         ssh_cmd = 'ssh %s@%s %s "%s"' % (user, host, options, cmd)
-        ssh_newkey = 'Are you sure you want to continue connecting'
+        ssh_newkey = 'Do you want to continue connecting?'
         p = pexpect.spawn(ssh_cmd, timeout=timeout)
 
         i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
         if i == 0:
-            p.sendline('yes')
+            p.sendline('y')
             i = p.expect([ssh_newkey, 'password:', pexpect.EOF])
         if i == 1:
             p.sendline(password)
@@ -119,7 +126,6 @@ for i in range(0,11):
         t.start()
     for t in threads:
         t.join()
-        print('Thread {} Stopped'.format(t))
     threads = []
 
 # run threads on the active ip's in the LAN to get NAME
@@ -130,7 +136,7 @@ for i in range(len(pos_ips)):
 
 for t in threads:
         t.join()
-        print('Thread {} Stopped'.format(t))
+
 threads = []
 
 
@@ -142,7 +148,7 @@ devices[0].master = True    #the lowest ip is the master
 
 #   temp print
 for h in devices:
-    print str(h)
+    print h
 
 #   check if my device is the master
 if devices[0].ip == sub_functions.my_ip_address():
