@@ -5,8 +5,9 @@ class iot_device():
         self.ip = ip
         self.master = master
 
-    def toString (self):
-        return "Name is:"+self.name+" ,Ip is:"+self.ip+" ,is Master?"+self.master
+
+    def __str__(self):
+        return "Name is:"+self.name+" ,Ip is:"+self.ip+" ,is Master?"+str(self.master)
 
     def setMaster(self,master):
         self.master = master

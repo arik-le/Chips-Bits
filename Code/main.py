@@ -1,21 +1,21 @@
 #! /usr/bin/env python
 
-
+import subprocess
 
 try:
     import ipaddress
 except:
     print "install ipaddress"
-    call("pip install ipaddress", shell=True)
+    subprocess.call("pip install ipaddress", shell=True)
     import ipaddress
 
 try:
     import pexpect
 except:
     print "install pexpect"
-    call("pip install pexpect", shell=True)
+    subprocess.call("pip install pexpect", shell=True)
     import pexpect
-import subprocess
+
 import os
 import threading
 import time
@@ -37,7 +37,7 @@ threads = []   #ip threads to ping and check
 try:
     subprocess.call("cp -av ~/.ssh/known_hosts ~/.ssh/known_hosts-old", shell=True)
     subprocess.call("rm ~/.ssh/known_hosts", shell=True)
-except:
+except Exception,e:
     print "not needed to delete known hosts"
 
 # Prompt the user to input a network address
@@ -96,7 +96,6 @@ def ping_host(i):
     elif "Request timed out" in output.decode('utf-8'):
         return  # print(str(all_hosts[i]), "is Offline")
     else:
-
         ip = str(all_hosts[i])
         my_ips = str(sub_functions.my_ip_address())
         if my_ips != ip:
@@ -112,6 +111,15 @@ def ssh_start(ip):
         devices.append(iot_device.iot_device(name, ip, False))
     return
 
+
+def route():
+    #   check if my device is the master
+    if devices[0].ip == sub_functions.my_ip_address():
+        print "i am Master"
+        master_main.main(devices)   #run master main function
+    else:
+        print "i am Slave"
+        main_slave.main(devices)
 ################################# MAIN ################################
 
 
@@ -150,13 +158,9 @@ devices[0].master = True    #the lowest ip is the master
 for h in devices:
     print h
 
-#   check if my device is the master
-if devices[0].ip == sub_functions.my_ip_address():
-    print "i am Master"
-    master_main.main(devices)   #run master main function
-else:
-    print "i am Slave"
-    main_slave.main(devices)
+
+
+route()
 
 
 
