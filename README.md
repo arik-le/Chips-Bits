@@ -32,7 +32,7 @@ We're trying to use the best tools and practices in order to produce a quality e
 ## Disclaimer
 This project is developed as part of the requirements for a **software engineering final project**( at the software engineering department - [Azrieli College of Engineering](http://www.jce.ac.il/), Jerusalem, Israel.
 
-Please visit our wiki for furthur project info: 
+Please visit our wiki for furthur project info: [HERE](https://github.com/arik-le/Chips-Bits/wiki)
 
 ### [Team Page](https://github.com/arik-le/Chips-Bits/wiki/Team-Page)
 
