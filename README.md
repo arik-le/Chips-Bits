@@ -6,6 +6,7 @@
 * The protocol will promote the transmission of information in a minimal, efficient and real-time manner.
 * Anathor goal in this project ,is to enable a system operation (which consists of sensors and IOT chips) as normal and as clean as possible.
 * Our desire is that the information will be transferred only when necessary and perceived as an exceptional situation in the system and requires human intervention.
+* our communiction will be a grid of IoT devices that will connect to one device , he will be alected to be Master Chip , all communiction and data will be with him only and ofcourse the slaved iot device that will send him the data.
 * The protocol will operate independently and completely autonomously.
 * Our thoughts are that the protocol activity will help save the cost of advanced and powerful storage servers and also use satellites for systems that use this communication networks.
 
@@ -31,7 +32,7 @@ We're trying to use the best tools and practices in order to produce a quality e
 ## Disclaimer
 This project is developed as part of the requirements for a **software engineering final project**( at the software engineering department - [Azrieli College of Engineering](http://www.jce.ac.il/), Jerusalem, Israel.
 
-Please visit our wiki for furthur project info: 
+Please visit our wiki for furthur project info: [HERE](https://github.com/arik-le/Chips-Bits/wiki)
 
 ### [Team Page](https://github.com/arik-le/Chips-Bits/wiki/Team-Page)
 
