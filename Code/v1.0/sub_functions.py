@@ -24,7 +24,7 @@ def get_range():
 def send_message(message):
     res = None
     message_obj = [message.type, message.body]
-    data_to_send = pickle.dumps(message_obj)
+    data_to_send = pickle.dumps(message)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         s.connect((message.device.ip, TCP_PORT))

@@ -5,6 +5,7 @@ import threading
 import sub_functions
 import time
 import pickle
+from message import Message
 from hc import HC
 from ms import ms
 
@@ -24,6 +25,7 @@ def listen(devices):
                 break
             else:
                 data = pickle.loads(r)
+                print type(data),data
                 if data.type == MESSAGE:
                     print data.body
                 elif data.type == DELTA_OF_DEVICE:

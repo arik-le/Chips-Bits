@@ -25,6 +25,7 @@ import re
 import master_main
 import main_slave
 import sub_functions
+from message import Message
 from myListen import listen
 from ms import ms
 from gVariable import *
@@ -165,7 +166,7 @@ def scan():
     print "==============="
     if devices[0].ip == sub_functions.my_ip_address():
         for device in devices[1:]:
-            message = Message(device,None,GET_FROM_MASTER,"")
+            message = Message(device,None,GET_FROM_MASTER,devices[0].ip+'|'+devices[0].name)
             sub_functions.send_message(message)
     return devices
 
