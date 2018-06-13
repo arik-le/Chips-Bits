@@ -26,9 +26,11 @@ def listen(devices):
             if not r:
                 break
             else:
+                print addr
                 data = pickle.loads(r)
                 if data.type == MESSAGE:
                     print data.body
+                #     enter data to log file
                 elif data.type == DELTA_OF_DEVICE:
                     from hc import HC
                     senc = HC(devices)
@@ -41,8 +43,8 @@ def listen(devices):
                     start_sense(devices)
                     break
                 elif data.type == GET_FROM_MASTER:
-                    print "update master"
-                    temp_data=data.body.split('|')
+                    temp_data = data.body.split('|')
+                    print "Update master, new master:\t"+temp_data[1] 
                     master = iot_device(temp_data[1],temp_data[0],True)
                     if master < devices[0]:
                         devices[0].master = False

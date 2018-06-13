@@ -127,39 +127,33 @@ class HC(sensors.Sensor):
         while open("master alive","r").read() == "T":
             sam = self.get_measurement()
             if sam is -1:
-                print "no sensor not connected "
+                print "No sensor is connected "
                 if sensor_conncted:
                     sensor_conncted = False
-                #     message = Message(self.devices[0], None, SENSOR_NOT_CONNECTED, "in this device sensor not connected")
-                #     rec =sub_functions.send_message(message)
-                # print rec
             else:
                 sensor_conncted = True
                 print "Sample: ", sam
                 if not self.is_in_range(5, sam):
                     if i_am_master:
-                        print "get problem from my sensor"
+                        print "Got an exception"
                     else:
                         pid = os.fork()
                         if pid is 0:
 
-                            body = " get problem from " + socket.gethostname() + ": the measurement is:" + str(
-                                sam) + " need to be around: " + \
+                            body = " Got an exception from " + socket.gethostname() + ": the measurement is:" + str(
+                                sam) + " Routine measurement: " + \
                                       str(self.delta_list[0]["average"])
                             message = Message(master, None, MESSAGE, body)
                             self.send_in_fork(master, os.getpid(), 3, message)
-                            print "send the problem"
+                            print "Send the exception measurement"
                             os._exit(0)
-                            print "not dead!!!!!!!"
-                        else:
-                            print "main keep running"
                 else:
                     print "O.K"
             try:
                 time.sleep(sample_range)
             except:
                 pass
-        print "close senc"
+
 
     def is_in_range(self, range_s, sam):
         # TODO return the sample are we want to compare
@@ -170,7 +164,7 @@ class HC(sensors.Sensor):
 
     def send_in_fork(self, ip, pid, time_to_try, message):
         is_transfer = False
-        print "i try to send", pid
+        print "Trying to send ", pid," Message"
 
         for i in range(time_to_try):
             try:
@@ -182,19 +176,20 @@ class HC(sensors.Sensor):
                 time.sleep(0.01)
                 print e, os.getpid()
         if is_transfer is True:
-            print "message arrived", pid
+            print "Message arrived", pid
         else:
-            print "message not arrived", pid
-            for device in self.devices:
-                if device.ip is not sub_functions.my_ip_address():
-                    cm_message=Message(device,None,CHANGE_MASTER,"mater does not respond ")
-                    sub_functions.send_message(cm_message)
-            f = open("master alive", 'w')
-            f.write("F")
-            from main import scan
-            self.devices=scan()
-            from myListen import start_sense
-            start_sense(self.devices)
+            print "Message didn't arrived", pid
+            print open("master alive", 'r').read()
+            if open("master alive", 'r').read() == "T":
+                for device in self.devices:
+                    if device.ip is not sub_functions.my_ip_address():
+                        cm_message=Message(device,None,CHANGE_MASTER,"mater does not respond ")
+                        sub_functions.send_message(cm_message)
+                open("master alive", 'w').write("F")
+                from main import scan
+                self.devices=scan()
+                from myListen import start_sense
+                start_sense(self.devices)
 
     def send_samples(self, ip):
         file = open(file_name)
