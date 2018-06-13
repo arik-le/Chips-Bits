@@ -20,7 +20,6 @@ def listen(devices):
     s.bind((sub_functions.my_ip_address(), TCP_PORT))
     s.listen(10)
     while True:
-        print "listening"
         try:
             conn, addr = s.accept()
             r = conn.recv(B_SIZE)
@@ -28,12 +27,12 @@ def listen(devices):
                 break
             else:
                 data = pickle.loads(r)
-                print type(data),data
                 if data.type == MESSAGE:
                     print data.body
                 elif data.type == DELTA_OF_DEVICE:
-                    x = hc.HC(devices)
-                    x.get_sample_from_ip(data.body,addr)
+                    from hc import HC
+                    senc = HC(devices)
+                    senc.get_sample_from_ip(data.body,addr)
                 elif data.type == CHANGE_MASTER:
                     f = open("master alive", 'w')
                     f.write("F")
@@ -51,7 +50,6 @@ def listen(devices):
                         open("master alive", 'w').write("F")
                         start_sense(devices)
                     elif devices[0] != master:
-                        print "2"
                         sub_functions.send_message(master.ip,GET_FROM_MASTER,devices[0].ip+"|"+devices[0].name)
                 elif data.type == SENSOR_NOT_CONNECTED:
                     print data.body

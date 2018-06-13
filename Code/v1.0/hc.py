@@ -60,7 +60,8 @@ class HC(sensors.Sensor):
     def get_delta_list(self):
         if sensors.file_exist(file_name):
             self.delta_list = self.get_delta_from_file("")
-            print self.delta_list
+            print "Initial Pattern exist"
+            print self.sample_str()
         else:
             self.create_delta_list()
             if len(self.delta_list) != 0:
@@ -79,7 +80,7 @@ class HC(sensors.Sensor):
         if len(self.samples) == 0:
             return
         for i in range(1, len(self.samples) - 1):
-            print self.samples[i].range
+            # print self.samples[i].range
             before_item = self.samples[i - 1].range
             item = self.samples[i].range
             if abs(item - before_item) > delta:
@@ -93,15 +94,27 @@ class HC(sensors.Sensor):
             j = self.delta_list[-1]["index"]
         i = len(self.samples) - 1
         self.delta_list.append({'time': get_time(), 'index': i, "average": get_average(self.samples, j, i)})
-        print self.delta_list
+        print self.sample_str()
+
+    def sample_str(self):
+        s = ''
+        before_index = 0
+        for delta in self.delta_list:
+            if before_index !=delta['index']:
+                s += '['+str(before_index)+'-'+str(delta['index'])+']'
+            else:
+                s += '[' + str(before_index)+']'
+            s+="\taverage = "+str(delta['average'])+"\ttime + "+str(delta['time'])+'\n'
+            before_index = delta["index"]+1
+        return s
 
     def take_samples(self):
-        for i in range(6):
-            print "======", i, "========"
+        print "Creating Initial Pattern"
+        for i in range(24):
             m = self.get_measurement()
             if m == -1:
                 break
-            print m
+            print "[", i, "]",m
             t = get_time()
             self.samples.append(sample.Sample(m, t))
             time.sleep(delay)
@@ -114,7 +127,7 @@ class HC(sensors.Sensor):
         while open("master alive","r").read() == "T":
             sam = self.get_measurement()
             if sam is -1:
-                print "the sensor HC not connected "
+                print "no sensor not connected "
                 if sensor_conncted:
                     sensor_conncted = False
                 #     message = Message(self.devices[0], None, SENSOR_NOT_CONNECTED, "in this device sensor not connected")

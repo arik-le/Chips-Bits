@@ -38,10 +38,10 @@ pos_ips = []
 
 # remove all known hosts and copy backup at known_hosts-old
 try:
-    subprocess.call("cp -av ~/.ssh/known_hosts ~/.ssh/known_hosts-old", shell=True)
-    subprocess.call("rm ~/.ssh/known_hosts", shell=True)
-except Exception,e:
-    print "not needed to delete known hosts"
+    subprocess.call("cp -av ~/.ssh/known_hosts ~/.ssh/known_hosts-old", shell=False)
+    subprocess.call("rm ~/.ssh/known_hosts", shell=False)
+except:
+    pass
 
 # Prompt the user to input a network address
 
@@ -109,27 +109,26 @@ def ssh_start(ip):
     name = ssh(ip,'uname -n','root','123456')
     if name != 'Unknown':
         name = re.sub("[^a-zA-Z0-9]", '',name)
-        print name
+        # print name
         devices.append(iot_device(name, ip, False))
     return
 
 
-def route():
-    #   check if my device is the master
-    if devices[0].ip == sub_functions.my_ip_address():
-        print "i am Master"
-        master_main.main(devices)   #run master main function
-    else:
-        print "i am Slave"
-        main_slave.main(devices)
-################################# MAIN ################################
+def progress(count):
+    if count == 0:
+        print "Scanning"
+    elif count % 2 ==0:
+        print "..."
+    return count +1
 
 
 def scan():
     global threads
     global devices
+    count = 0
     #   run 255 threads to ping and check who is active
     for i in range(0, 11):
+        count=progress(count)
         s = v = 25
         if i == 10:
             v = 4

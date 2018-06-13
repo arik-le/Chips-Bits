@@ -14,7 +14,6 @@ class iot_device():
     def __lt__(self, other):
         this_lower = int(self.ip.split('.')[3])
         other_lower = int(other.ip.split('.')[3])
-        print "56"
         return this_lower < other_lower
 
     def __ne__(self, other):
