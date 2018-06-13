@@ -36,10 +36,11 @@ Please visit our wiki for furthur project info: [HERE](https://github.com/arik-l
 
 ### [Team Page](https://github.com/arik-le/Chips-Bits/wiki/Team-Page)
 
-### Project Documents
-* [Propsal Iteration](https://github.com/arik-le/Chips-Bits/wiki/Proposal-report)
-* [Use Cases](https://github.com/arik-le/Chips-Bits/wiki/Use-Cases)
-* [Alfa Iteration](https://github.com/arik-le/Chips-Bits/wiki/Alfa-Stage-Report)
+### Project Stages
+* [Propsal Iteration](https://github.com/arik-le/Chips-Bits/milestone/1)
+* [Alfa Iteration](https://github.com/arik-le/Chips-Bits/milestone/2)
+* [Beta Iteration](https://github.com/arik-le/Chips-Bits/milestone/3)
+* [Project Deadline](https://github.com/arik-le/Chips-Bits/milestone/4)
 
 ### Project Diary and Scheudle
 Using [Trello app site](https://trello.com/b/3eGIbgko/project-schedule)
