@@ -16,18 +16,16 @@ except:
     subprocess.call("pip install pexpect", shell=True)
     import pexpect
 
+import datetime
 import os
 import threading
 import time
 import socket
-import iot_device
+from iot_device import iot_device
 import re
-import master_main
-import main_slave
 import sub_functions
 from message import Message
-from myListen import listen
-from ms import ms
+from myListen import *
 from gVariable import *
 # TODO create a file that run all imports and insatll them
 
@@ -83,10 +81,10 @@ def ssh(host, cmd, user, password, timeout=10, bg_run=False):
             result = p.before  # print out the result
         elif i == 2:
             result = 'Unknown'
-            print "either got key or connection timeout"
+            # print "either got key or connection timeout"
     except:
         result = 'Unknown'
-        print "timeout exceeded probably not a Iot Device"
+        # print "timeout exceeded probably not a Iot Device"
     return result
 
 
@@ -112,7 +110,7 @@ def ssh_start(ip):
     if name != 'Unknown':
         name = re.sub("[^a-zA-Z0-9]", '',name)
         print name
-        devices.append(iot_device.iot_device(name, ip, False))
+        devices.append(iot_device(name, ip, False))
     return
 
 
@@ -155,7 +153,7 @@ def scan():
     threads = []
 
     #  append my device and sort by ip
-    devices.append(iot_device.iot_device(socket.gethostname(), sub_functions.my_ip_address(), False))
+    devices.append(iot_device(socket.gethostname(), sub_functions.my_ip_address(), False))
     devices = sorted(devices, key=lambda iot_device: iot_device.ip)
     devices[0].master = True    #the lowest ip is the master
 
@@ -181,10 +179,8 @@ if __name__ == '__main__':
     scan()
     pid = os.fork()
     if pid is 0:
-        print "son"
-        ms(devices)
+        start_sense(devices)
     else:
-        print "father"
         listen(devices)
     # lis = threading.Thread(target=listen, args=(devices,i_am__the_master(),))
     # lis.start()11111

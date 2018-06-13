@@ -10,6 +10,7 @@ import datetime
 import socket
 import sub_functions
 from gVariable import *
+from  myListen import *
 from message import Message
 from data_package import DataPackage
 
@@ -22,6 +23,7 @@ file_name = "hcSample"
 delay = 1
 delta = 5.0
 boot_time = 4
+sensor_conncted = True
 
 
 class HC(sensors.Sensor):
@@ -65,7 +67,7 @@ class HC(sensors.Sensor):
                 f = open(file_name, 'w')
                 pickle.dump(self.delta_list, f)
                 f = open(file_name, 'r')
-                sm_message=Message(devices[0],SAMPLES_MESSAGE,self.delta_list)
+                sm_message=Message(self.devices[0],None,SAMPLES_MESSAGE,self.delta_list)
                 sub_functions.send_message(sm_message )
 
     def get_delta_from_file(self, adder):
@@ -99,21 +101,28 @@ class HC(sensors.Sensor):
             m = self.get_measurement()
             if m == -1:
                 break
+            print m
             t = get_time()
             self.samples.append(sample.Sample(m, t))
             time.sleep(delay)
 
     def run(self, sample_range):
-        print "start senc"
+        global sensor_conncted
         master = self.devices[0]
         i_am_master=master.ip is sub_functions.my_ip_address()
         open("master alive","w").write("T")
         while open("master alive","r").read() == "T":
             sam = self.get_measurement()
-            print "sam:", sam
             if sam is -1:
-                print "hc not connect "
+                print "the sensor HC not connected "
+                if sensor_conncted:
+                    sensor_conncted = False
+                #     message = Message(self.devices[0], None, SENSOR_NOT_CONNECTED, "in this device sensor not connected")
+                #     rec =sub_functions.send_message(message)
+                # print rec
             else:
+                sensor_conncted = True
+                print "Sample: ", sam
                 if not self.is_in_range(5, sam):
                     if i_am_master:
                         print "get problem from my sensor"
@@ -171,12 +180,8 @@ class HC(sensors.Sensor):
             f.write("F")
             from main import scan
             self.devices=scan()
-            from ms import ms
-            ms(self.devices)
-            # is_master = sub_functions.check_is_alive(self.devices)
-            # if is_master:  # master has fallen and now this slave is the new master
-            #
-            #     main.route()
+            from myListen import start_sense
+            start_sense(self.devices)
 
     def send_samples(self, ip):
         file = open(file_name)

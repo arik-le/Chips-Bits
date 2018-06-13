@@ -7,9 +7,12 @@ import time
 import pickle
 from message import Message
 from hc import HC
-from ms import ms
 
-# i_am_master = False
+
+def start_sense(devices):
+    sensor = HC(devices)
+    sensor.get_delta_list()
+    sensor.run(5)
 
 
 def listen(devices):
@@ -36,7 +39,7 @@ def listen(devices):
                     f.write("F")
                     from main import scan
                     devices=scan()
-                    ms(devices)
+                    start_sense(devices)
                     break
                 elif data.type == GET_FROM_MASTER:
                     print "update master"
@@ -46,10 +49,12 @@ def listen(devices):
                         devices[0].master = False
                         devices=[master]+devices
                         open("master alive", 'w').write("F")
-                        ms(devices)
+                        start_sense(devices)
                     elif devices[0] != master:
                         print "2"
                         sub_functions.send_message(master.ip,GET_FROM_MASTER,devices[0].ip+"|"+devices[0].name)
+                elif data.type == SENSOR_NOT_CONNECTED:
+                    print data.body
 
                     # i_am_master = i_am__the_master()
                 conn.close()
