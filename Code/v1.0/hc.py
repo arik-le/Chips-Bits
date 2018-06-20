@@ -67,8 +67,9 @@ class HC(sensors.Sensor):
             if len(self.delta_list) != 0:
                 f = open(file_name, 'w')
                 pickle.dump(self.delta_list, f)
-                f = open(file_name, 'r')
+                open(file_name, 'r')
                 sm_message=Message(self.devices[0],None,SAMPLES_MESSAGE,self.delta_list)
+                # sm_message.add_to_queue()
                 sub_functions.send_message(sm_message )
 
     def get_delta_from_file(self, adder):
@@ -123,12 +124,15 @@ class HC(sensors.Sensor):
         global sensor_conncted
         master = self.devices[0]
         i_am_master=master.ip is sub_functions.my_ip_address()
-        open("master alive","w").write("T")
+        last_time_send = time.time()
         while open("master alive","r").read() == "T":
             sam = self.get_measurement()
             if sam is -1:
                 print "No sensor is connected "
                 if sensor_conncted:
+                    message = Message(master, None, MESSAGE, socket.gethostname()+": No sensor is connected "+get_time())
+                    message.add_to_queue()
+                    # self.send_in_fork(master,None,3,message)
                     sensor_conncted = False
             else:
                 sensor_conncted = True
@@ -144,10 +148,16 @@ class HC(sensors.Sensor):
                                 sam) + " Routine measurement: " + \
                                       str(self.delta_list[0]["average"])
                             message = Message(master, None, MESSAGE, body)
-                            self.send_in_fork(master, os.getpid(), 3, message)
+                            message.add_to_queue()
+                            # self.send_in_fork(master, os.getpid(), 3, message)
                             print "Send the exception measurement"
                             os._exit(0)
                 else:
+                    if time.time() >= last_time_send+TIME_TO_UPDATE:
+                        message=Message(master,None,MESSAGE,socket.gethostname() + " The indices are normal "+get_time())
+                        message.add_to_queue()
+                        # self.send_in_fork(master, None, 3, message)
+                        last_time_send=time.time()
                     print "O.K"
             try:
                 time.sleep(sample_range)
@@ -179,7 +189,6 @@ class HC(sensors.Sensor):
             print "Message arrived", pid
         else:
             print "Message didn't arrived", pid
-            print open("master alive", 'r').read()
             if open("master alive", 'r').read() == "T":
                 for device in self.devices:
                     if device.ip is not sub_functions.my_ip_address():
@@ -215,7 +224,13 @@ class HC(sensors.Sensor):
 
 def get_time():
     now = datetime.datetime.now()
-    return str(now.hour) + ":" + str(now.minute) + ":" + str(now.second)
+    minute = now.minute
+    minute_str =""
+    if minute < 10:
+        minute_str+="0"
+    minute_str += str(minute)
+
+    return str(now.hour) + ":" + minute_str + ":" + str(now.second)
 
 
 def get_average(samples, s, f):

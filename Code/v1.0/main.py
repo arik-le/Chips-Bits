@@ -21,11 +21,12 @@ import os
 import threading
 import time
 import socket
+import message
 from iot_device import iot_device
 import re
 import sub_functions
 from message import Message
-from myListen import *
+import myListen
 from gVariable import *
 # TODO create a file that run all imports and insatll them
 
@@ -125,6 +126,9 @@ def progress(count):
 def scan():
     global threads
     global devices
+    global pos_ips
+    pos_ips = []
+    devices = []
     count = 0
     #   run 255 threads to ping and check who is active
     for i in range(0, 11):
@@ -153,7 +157,7 @@ def scan():
 
     #  append my device and sort by ip
     devices.append(iot_device(socket.gethostname(), sub_functions.my_ip_address(), False))
-    devices = sorted(devices, key=lambda iot_device: iot_device.ip)
+    devices = sorted(devices, key=lambda iot_device: int(iot_device.ip.split('.')[3]))
     devices[0].master = True    #the lowest ip is the master
 
     #   temp print
@@ -165,6 +169,13 @@ def scan():
         for device in devices[1:]:
             message = Message(device,None,GET_FROM_MASTER,devices[0].ip+'|'+devices[0].name)
             sub_functions.send_message(message)
+    open("master alive", 'w').write("T")
+    pid = os.fork()
+    if pid is 0:
+        sub_functions.send_messages(devices)
+        devices = scan()
+        myListen.start_sense(devices)
+        os._exit(0)
     return devices
 
 
@@ -175,19 +186,17 @@ def i_am__the_master():
 
 
 if __name__ == '__main__':
+    if not sub_functions.file_exist(MESSAGE_QUEUE_FILE):
+        open(MESSAGE_QUEUE_FILE,"w")
     scan()
+    try:
+        input()
+    except:
+        pass
     pid = os.fork()
     if pid is 0:
-        start_sense(devices)
+        myListen.start_sense(devices)
+        os._exit(0)
     else:
-        listen(devices)
-    # lis = threading.Thread(target=listen, args=(devices,i_am__the_master(),))
-    # lis.start()11111
-    # sen = threading.Thread(target=ms, args=(devices, i_am__the_master(),))
-    # sen.start()
-
-
-
-
-
+        myListen.listen(devices, pid)
 

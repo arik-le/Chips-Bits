@@ -5,6 +5,7 @@ import pickle
 import os
 import time
 from message import Message
+import message as mess
 from gVariable import *
 
 
@@ -21,9 +22,16 @@ def get_range():
     return base_ip
 
 
+def get_name_from_ip(ip,devices):
+    for device in devices:
+        if ip == device.ip:
+            return device.name
+    return None
+
+
 def send_message(message):
-    res = None
-    message_obj = [message.type, message.body]
+    # res = None
+    # message_obj = [message.type, message.body]
     data_to_send = pickle.dumps(message)
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -37,6 +45,30 @@ def send_message(message):
         res = None
 
     return res
+
+
+def file_exist(file_name):
+    return os.path.isfile(file_name)
+
+
+def send_messages(devices):
+    while open("master alive", 'r').read() == "T":
+        res = None
+        if mess.exist():
+            message_to_send = mess.get()
+            message_to_send.update_master(devices[0])
+            for i in range(3):
+                print "Try to send..."
+                res = send_message(message_to_send)
+                if res is not None:
+                    mess.remove_from_queue()
+                    print "Message arrived"
+                    break
+                # time.sleep(3)
+            print res
+            if res is None:
+                print "Message not arrived"
+                open("master alive", 'w').write("F")
 
 
 # Configure subprocess to hide the console window
