@@ -26,12 +26,6 @@ class Sensor(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    # def set_sample(self):
-    #     pass
-    #
-    # def create_sample(self):
-    #     pass
-
     def get_measurement(self):
         pass
 
@@ -39,4 +33,38 @@ class Sensor(object):
         pass
 
     def get_samples(self):
+        pass
+
+    def __init__(self):
+        pass
+
+
+    def get_delta_list(self):
+        pass
+
+    def get_delta_from_file(self, adder):
+        pass
+
+    def create_delta_list(self):
+        pass
+
+    def sample_str(self):
+        pass
+
+    def take_samples(self):
+        pass
+
+    def run(self, sample_range):
+        pass
+
+    def is_in_range(self, range_s, sam):
+      pass
+
+    def send_in_fork(self, ip, pid, time_to_try, message):
+        pass
+
+    def send_samples(self, ip):
+        pass
+
+    def get_sample_from_device(self, samples, addr):
         pass
