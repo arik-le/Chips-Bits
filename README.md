@@ -19,7 +19,7 @@ We're trying to use the best tools and practices in order to produce a quality e
 |Category|Status|
 |---|---|
 | Version Control System| ![git & github](https://img.shields.io/badge/Github-open-blue.svg)|
-| Recommended IDE | [![Arduino](https://img.shields.io/badge/Arduino-IDE-lightgrey.svg)](https://www.arduino.cc/en/Guide/Windows) |
+| Recommended IDE | [![PyCharm](https://img.shields.io/badge/PyCharm-IDE-lightgrey.svg)](https://www.jetbrains.com/pycharm/documentation/) |
 | License | [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://github.com/arik-le/Chips-Bits/blob/master/LICENSE) |
 | Code Style | [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://google.github.io/styleguide/pyguide.html) |
 | Current Release | [![Current Version](https://img.shields.io/github/release/arik-le/Chips-Bits.svg?style=flat)](https://github.com/arik-le/Chips-Bits/releases) |
@@ -36,10 +36,11 @@ Please visit our wiki for furthur project info: [HERE](https://github.com/arik-l
 
 ### [Team Page](https://github.com/arik-le/Chips-Bits/wiki/Team-Page)
 
-### Project Documents
-* [Propsal Iteration](https://github.com/arik-le/Chips-Bits/wiki/Proposal-report)
-* [Use Cases](https://github.com/arik-le/Chips-Bits/wiki/Use-Cases)
-* [Alfa Iteration](https://github.com/arik-le/Chips-Bits/wiki/Alfa-Stage-Report)
+### Project Stages
+* [Propsal Iteration](https://github.com/arik-le/Chips-Bits/milestone/1)
+* [Alfa Iteration](https://github.com/arik-le/Chips-Bits/milestone/2)
+* [Beta Iteration](https://github.com/arik-le/Chips-Bits/milestone/3)
+* [Project Deadline](https://github.com/arik-le/Chips-Bits/milestone/4)
 
 ### Project Diary and Scheudle
 Using [Trello app site](https://trello.com/b/3eGIbgko/project-schedule)
