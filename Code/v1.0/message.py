@@ -1,7 +1,7 @@
 import pickle
 import os
 # from myListen import start_sense
-from gVariable import *
+from constat_variable import *
 
 
 class Message:
