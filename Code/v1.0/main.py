@@ -2,6 +2,7 @@
 #   python main.py
 import subprocess
 
+# try to import this libraries of install it
 try:
     import ipaddress
 except:
@@ -24,17 +25,18 @@ import socket
 import message
 from iot_device import iot_device
 import re
-import sub_functions
+import auxiliary_functions
+from message import update_queue
 from message import Message
-import myListen
-from gVariable import *
-# TODO create a file that run all imports and insatll them
+import listen
+from constant_variable import *
+
 
 ########################### GLOBAL VALUES   #####################
 
 devices = []    #IOT devices
 threads = []   #ip threads to ping and check
-pos_ips = []
+pos_ips = []    # possible ips to check if they are  iot devices
 
 
 # remove all known hosts and copy backup at known_hosts-old
@@ -46,7 +48,7 @@ except:
 
 # Prompt the user to input a network address
 
-net_addr =sub_functions.get_range()
+net_addr =auxiliary_functions.get_range()
 # u'192.168.43.0/24'
 
 # Create the network
@@ -79,13 +81,11 @@ def ssh(host, cmd, user, password, timeout=10, bg_run=False):
         if i == 1:
             p.sendline(password)
             p.expect(pexpect.EOF)
-            result = p.before  # print out the result
+            result = p.before
         elif i == 2:
             result = 'Unknown'
-            # print "either got key or connection timeout"
     except:
         result = 'Unknown'
-        # print "timeout exceeded probably not a Iot Device"
     return result
 
 
@@ -95,26 +95,26 @@ def ping_host(i):
     output = subprocess.Popen(['ping', '-c', '1', '-w', '1', str(all_hosts[i])], stdout=subprocess.PIPE,
                               startupinfo=info).communicate()[0]
     if " 0 packets received, 100% packet loss" in output.decode('utf-8'):
-        return  # print(str(all_hosts[i]), "is Offline")
+        return
     elif "Request timed out" in output.decode('utf-8'):
-        return  # print(str(all_hosts[i]), "is Offline")
+        return
     else:
         ip = str(all_hosts[i])
-        my_ips = str(sub_functions.my_ip_address())
+        my_ips = str(auxiliary_functions.my_ip_address())
         if my_ips != ip:
             pos_ips.append(ip)
         return
 
 
+# start ssh function and append to iot-devices list if the ip is of iot devices
 def ssh_start(ip):
     name = ssh(ip,'uname -n','root','123456')
     if name != 'Unknown':
         name = re.sub("[^a-zA-Z0-9]", '',name)
-        # print name
         devices.append(iot_device(name, ip, False))
     return
 
-
+# print scanning and dots every 2 iterations
 def progress(count):
     if count == 0:
         print "Scanning"
@@ -122,7 +122,7 @@ def progress(count):
         print "..."
     return count +1
 
-
+# scan for devices in the LAN -  run on 255 ips
 def scan():
     global threads
     global devices
@@ -130,18 +130,23 @@ def scan():
     pos_ips = []
     devices = []
     count = 0
+
     #   run 255 threads to ping and check who is active
     for i in range(0, 11):
         count=progress(count)
         s = v = 25
+        if i == 0:
+            f = 1
+        else:
+            f = i*s
         if i == 10:
             v = 4
-        for j in range(i*s, (i * s) + v):
+        for j in range(f, (i * s) + v):
             t = threading.Thread(target=ping_host,args=(j,))
             threads.append(t)
             t.start()
         for t in threads:
-            t.join()
+            t.join(10)
         threads = []
 
     # run threads on the active ip's in the LAN to get NAME
@@ -151,52 +156,72 @@ def scan():
         t.start()
 
     for t in threads:
-            t.join()
+        t.join(10)
 
     threads = []
 
     #  append my device and sort by ip
-    devices.append(iot_device(socket.gethostname(), sub_functions.my_ip_address(), False))
+    devices.append(iot_device(socket.gethostname(), auxiliary_functions.my_ip_address(), False))
     devices = sorted(devices, key=lambda iot_device: int(iot_device.ip.split('.')[3]))
-    devices[0].master = True    #the lowest ip is the master
-
-    #   temp print
+    # devices[0].master = True    #the lowest ip is the master
+    find_master = False
+    if devices[0].ip != auxiliary_functions.my_ip_address():
+        for device in devices:
+            if device.ip != auxiliary_functions.my_ip_address():
+                message = Message(device,None, CHECKS_THAT_MASTER_IS_ALIVE, MESSAGE_TO_MASTER_IS_ALIVE)
+                res = auxiliary_functions.send_message(message)
+                if res != None:
+                    device.master = True
+                    find_master = True
+                    master = devices.pop(devices.index(device))
+                    message = Message(device,None,YOU_ARE_THE_MASTER,"you are the master")
+                    auxiliary_functions.send_message(message)
+                    break
+        if not find_master:
+            for device in devices:
+                if device.ip == auxiliary_functions.my_ip_address():
+                    master = devices.pop(devices.index(device))
+                    device.master = True
+                    print "I am the master ,%s is not active" % (devices[0].name)
+        devices = [master] + sorted(devices, key=lambda iot_device: int(iot_device.ip.split('.')[3]))
+    else:
+        devices[0].master = True
+    # update the master in queue
+    update_queue(devices[0])
     print "==============="
     for device in devices:
         print device
     print "==============="
-    if devices[0].ip == sub_functions.my_ip_address():
+    if devices[0].ip == auxiliary_functions.my_ip_address():
         for device in devices[1:]:
             message = Message(device,None,GET_FROM_MASTER,devices[0].ip+'|'+devices[0].name)
-            sub_functions.send_message(message)
+            auxiliary_functions.send_message(message)
+            # message.add_to_queue()
     open("master alive", 'w').write("T")
     pid = os.fork()
     if pid is 0:
-        sub_functions.send_messages(devices)
+        auxiliary_functions.send_messages(devices)
         devices = scan()
-        myListen.start_sense(devices)
+        listen.start_sense(devices)
         os._exit(0)
     return devices
 
-
+# check if this devices is the master in our network
 def i_am__the_master():
-    if sub_functions.my_ip_address() == devices[0].ip:
+    if auxiliary_functions.my_ip_address() == devices[0].ip:
         return True
     return False
 
 
+# =======        MAIN           ========
 if __name__ == '__main__':
-    if not sub_functions.file_exist(MESSAGE_QUEUE_FILE):
+    if not auxiliary_functions.file_exist(MESSAGE_QUEUE_FILE):
         open(MESSAGE_QUEUE_FILE,"w")
     scan()
-    try:
-        input()
-    except:
-        pass
     pid = os.fork()
     if pid is 0:
-        myListen.start_sense(devices)
+        listen.start_sense(devices)
         os._exit(0)
     else:
-        myListen.listen(devices, pid)
+        listen.listen(devices, pid)
 

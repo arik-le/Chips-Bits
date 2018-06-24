@@ -8,30 +8,27 @@ import sensors
 import time
 import datetime
 import socket
-import sub_functions
-from gVariable import *
-from  myListen import *
+from auxiliary_functions import *
+from constant_variable import *
+from listen import *
 from message import Message
-from data_package import DataPackage
 
-# TCP_PORT = 5005
-pin12 = mraa.Gpio(16)
+
+pin12 = mraa.Gpio(16)   # connection to device via pin12 - input
 pin12.dir(mraa.DIR_IN)  # echo
 pin13 = mraa.Gpio(17)  # trig
-pin13.dir(mraa.DIR_OUT)
-file_name = "hcSample"
-delay = 1
-delta = 5.0
-boot_time = 4
-sensor_conncted = True
+pin13.dir(mraa.DIR_OUT) # connection to device via pin12 - output
+file_name = "hcSample"      # name of sample for initial pattern
+sensor_conncted = True      #flag
 
 
 class HC(sensors.Sensor):
-    def __init__(self, devices):
+    def __init__(self, devices):    #constructor
         self.samples = []
         self.delta_list = []
         self.devices = devices
 
+    # set measurement from the sensor
     def get_measurement(self):
         self.reset_sensor()
         timeout = time.time() + boot_time
@@ -42,14 +39,17 @@ class HC(sensors.Sensor):
 
         while pin12.read() == 1:  # Check whether the ECHO is HIGH
             p_end = time.time()  # Saves the last known time of HIGH pulse
+        try:
+            p_duration = p_end - p_start  # Get pulse duration to a variable
 
-        p_duration = p_end - p_start  # Get pulse duration to a variable
+            d = p_duration * 17150  # Multiply pulse duration by 17150 to get distance
+            d = round(d, 2)  # Round to two decimal points
 
-        d = p_duration * 17150  # Multiply pulse duration by 17150 to get distance
-        d = round(d, 2)  # Round to two decimal points
-
-        return d
-
+            return d
+        except:
+            time.sleep(2)
+            return self.get_measurement()
+    # reset sensor each time he measure
     def reset_sensor(self):
         pin13.write(0)
         pin13.write(1)
@@ -57,25 +57,27 @@ class HC(sensors.Sensor):
         pin13.write(0)
         return
 
+    # get or set initial pattern
     def get_delta_list(self):
-        if sensors.file_exist(file_name):
+        if sensors.file_exist(file_name):           #if initial pattern is exist in file
             self.delta_list = self.get_delta_from_file("")
             print "Initial Pattern exist"
             print self.sample_str()
-        else:
+        else:           # else : set new initial pattern
             self.create_delta_list()
             if len(self.delta_list) != 0:
                 f = open(file_name, 'w')
                 pickle.dump(self.delta_list, f)
                 open(file_name, 'r')
                 sm_message=Message(self.devices[0],None,SAMPLES_MESSAGE,self.delta_list)
-                # sm_message.add_to_queue()
-                sub_functions.send_message(sm_message )
+                send_message(sm_message )
 
+    # get from file
     def get_delta_from_file(self, adder):
         file = open(file_name + str(adder), 'r')
         return pickle.load(file)
 
+    # create new pattern by measuring real time
     def create_delta_list(self):
         self.take_samples()
         if len(self.samples) == 0:
@@ -84,7 +86,7 @@ class HC(sensors.Sensor):
             # print self.samples[i].range
             before_item = self.samples[i - 1].range
             item = self.samples[i].range
-            if abs(item - before_item) > delta:
+            if abs(item - before_item) > offset:
                 j = 0
                 if len(self.delta_list) > 0:
                     j = self.delta_list[-1]["index"]
@@ -97,6 +99,7 @@ class HC(sensors.Sensor):
         self.delta_list.append({'time': get_time(), 'index': i, "average": get_average(self.samples, j, i)})
         print self.sample_str()
 
+    # show on screen our sample
     def sample_str(self):
         s = ''
         before_index = 0
@@ -105,10 +108,11 @@ class HC(sensors.Sensor):
                 s += '['+str(before_index)+'-'+str(delta['index'])+']'
             else:
                 s += '[' + str(before_index)+']'
-            s+="\taverage = "+str(delta['average'])+"\ttime + "+str(delta['time'])+'\n'
+            s+="\taverage = "+str(delta['average'])+"\ttime = "+str(delta['time'])+'\n'
             before_index = delta["index"]+1
         return s
 
+    # take 24 messurements by our pattern settings
     def take_samples(self):
         print "Creating Initial Pattern"
         for i in range(24):
@@ -120,19 +124,19 @@ class HC(sensors.Sensor):
             self.samples.append(sample.Sample(m, t))
             time.sleep(delay)
 
+    # main function in HC , run infinity the functions in this library
     def run(self, sample_range):
         global sensor_conncted
         master = self.devices[0]
-        i_am_master=master.ip is sub_functions.my_ip_address()
+        i_am_master=master.ip is my_ip_address()
         last_time_send = time.time()
         while open("master alive","r").read() == "T":
             sam = self.get_measurement()
             if sam is -1:
                 print "No sensor is connected "
                 if sensor_conncted:
-                    message = Message(master, None, MESSAGE, socket.gethostname()+": No sensor is connected "+get_time())
+                    message = Message(master, None, ERR_MESSAGE, socket.gethostname()+": No sensor is connected "+get_time())
                     message.add_to_queue()
-                    # self.send_in_fork(master,None,3,message)
                     sensor_conncted = False
             else:
                 sensor_conncted = True
@@ -147,14 +151,17 @@ class HC(sensors.Sensor):
                             body = " Got an exception from " + socket.gethostname() + ": the measurement is:" + str(
                                 sam) + " Routine measurement: " + \
                                       str(self.delta_list[0]["average"])
-                            message = Message(master, None, MESSAGE, body)
-                            message.add_to_queue()
+                            message = Message(master, None, ERR_MESSAGE, body)
+                            if master.ip != my_ip_address():
+                                message.add_to_queue()
+                            else:
+                                add_to_log_file(message)
                             # self.send_in_fork(master, os.getpid(), 3, message)
                             print "Send the exception measurement"
                             os._exit(0)
                 else:
                     if time.time() >= last_time_send+TIME_TO_UPDATE:
-                        message=Message(master,None,MESSAGE,socket.gethostname() + " The indices are normal "+get_time())
+                        message=Message(master,None,ERR_MESSAGE,socket.gethostname() + " The indices are normal "+get_time())
                         message.add_to_queue()
                         # self.send_in_fork(master, None, 3, message)
                         last_time_send=time.time()
@@ -164,13 +171,13 @@ class HC(sensors.Sensor):
             except:
                 pass
 
-
+    # check if the sample is in range of the last samples
     def is_in_range(self, range_s, sam):
-        # TODO return the sample are we want to compare
         for d in self.delta_list:
             if float(d["average"]) - range_s < sam < float(d["average"]) + range_s:
                 return True
         return False
+
 
     def send_in_fork(self, ip, pid, time_to_try, message):
         is_transfer = False
@@ -178,7 +185,7 @@ class HC(sensors.Sensor):
 
         for i in range(time_to_try):
             try:
-                res = sub_functions.send_message(message)
+                res = send_message(message)
                 if res is not None:
                     is_transfer = True
                 break
@@ -191,27 +198,29 @@ class HC(sensors.Sensor):
             print "Message didn't arrived", pid
             if open("master alive", 'r').read() == "T":
                 for device in self.devices:
-                    if device.ip is not sub_functions.my_ip_address():
+                    if device.ip is not my_ip_address():
                         cm_message=Message(device,None,CHANGE_MASTER,"mater does not respond ")
-                        sub_functions.send_message(cm_message)
+                        send_message(cm_message)
                 open("master alive", 'w').write("F")
                 from main import scan
                 self.devices=scan()
-                from myListen import start_sense
+                from listen import start_sense
                 start_sense(self.devices)
+
 
     def send_samples(self, ip):
         file = open(file_name)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, TCP_PORT))
         data = file.read()
-        s.send(DataPackage.SAMPLES_MESSAGE + data)
+        s.send(SAMPLES_MESSAGE + data)
         s.settimeout(5)
         data = s.recv(2048)
         print data
         s.close()
 
-    def get_sample_from_ip(self, samples, addr):
+    # get sample from remote device
+    def get_sample_from_device(self, samples, addr):
         addr_res = str(addr[0])
         print file_name + "_" + addr_res
         try:
@@ -219,22 +228,5 @@ class HC(sensors.Sensor):
             pickle.dump(samples, file)
         except Exception as e:
             print e
-        # file.close()
 
 
-def get_time():
-    now = datetime.datetime.now()
-    minute = now.minute
-    minute_str =""
-    if minute < 10:
-        minute_str+="0"
-    minute_str += str(minute)
-
-    return str(now.hour) + ":" + minute_str + ":" + str(now.second)
-
-
-def get_average(samples, s, f):
-    total = 0.0
-    for i in range(s, f):
-        total += samples[i].range
-    return total / (f - s)
