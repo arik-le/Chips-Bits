@@ -41,10 +41,8 @@ class HC(sensors.Sensor):
             p_end = time.time()  # Saves the last known time of HIGH pulse
         try:
             p_duration = p_end - p_start  # Get pulse duration to a variable
-
             d = p_duration * 17150  # Multiply pulse duration by 17150 to get distance
             d = round(d, 2)  # Round to two decimal points
-
             return d
         except:
             time.sleep(2)
@@ -61,7 +59,7 @@ class HC(sensors.Sensor):
     def get_delta_list(self):
         if sensors.file_exist(file_name):           #if initial pattern is exist in file
             self.delta_list = self.get_delta_from_file("")
-            print "Initial Pattern exist"
+            print "== Initial Pattern exist =="
             print self.sample_str()
         else:           # else : set new initial pattern
             self.create_delta_list()
@@ -108,13 +106,13 @@ class HC(sensors.Sensor):
                 s += '['+str(before_index)+'-'+str(delta['index'])+']'
             else:
                 s += '[' + str(before_index)+']'
-            s+="\taverage = "+str(delta['average'])+"\ttime = "+str(delta['time'])+'\n'
+            s+="\taverage = "+str(delta['average'])+"\ttime + "+str(delta['time'])+'\n'
             before_index = delta["index"]+1
         return s
 
     # take 24 messurements by our pattern settings
     def take_samples(self):
-        print "Creating Initial Pattern"
+        print "== Creating Initial Pattern =="
         for i in range(24):
             m = self.get_measurement()
             if m == -1:
@@ -133,7 +131,7 @@ class HC(sensors.Sensor):
         while open("master alive","r").read() == "T":
             sam = self.get_measurement()
             if sam is -1:
-                print "No sensor is connected "
+                print "ERROR: No sensor is connected"
                 if sensor_conncted:
                     message = Message(master, None, ERR_MESSAGE, socket.gethostname()+": No sensor is connected "+get_time())
                     message.add_to_queue()
@@ -148,7 +146,7 @@ class HC(sensors.Sensor):
                         pid = os.fork()
                         if pid is 0:
 
-                            body = " Got an exception from " + socket.gethostname() + ": the measurement is:" + str(
+                            body = "Got an exception from " + socket.gethostname() + ": the measurement is:" + str(
                                 sam) + " Routine measurement: " + \
                                       str(self.delta_list[0]["average"])
                             message = Message(master, None, ERR_MESSAGE, body)
@@ -157,13 +155,12 @@ class HC(sensors.Sensor):
                             else:
                                 add_to_log_file(message)
                             # self.send_in_fork(master, os.getpid(), 3, message)
-                            print "Send the exception measurement"
+                            print "Send the exception measurement to Master"
                             os._exit(0)
                 else:
                     if time.time() >= last_time_send+TIME_TO_UPDATE:
-                        message=Message(master,None,ERR_MESSAGE,socket.gethostname() + " The indices are normal "+get_time())
+                        message=Message(master,None,ERR_MESSAGE,socket.gethostname() + " Normal Status "+get_time()+"(sending 1 bit)")
                         message.add_to_queue()
-                        # self.send_in_fork(master, None, 3, message)
                         last_time_send=time.time()
                     print "O.K"
             try:
@@ -178,7 +175,7 @@ class HC(sensors.Sensor):
                 return True
         return False
 
-
+    # send data to master
     def send_in_fork(self, ip, pid, time_to_try, message):
         is_transfer = False
         print "Trying to send ", pid," Message"
@@ -199,7 +196,7 @@ class HC(sensors.Sensor):
             if open("master alive", 'r').read() == "T":
                 for device in self.devices:
                     if device.ip is not my_ip_address():
-                        cm_message=Message(device,None,CHANGE_MASTER,"mater does not respond ")
+                        cm_message=Message(device,None,CHANGE_MASTER,"master does not respond ")
                         send_message(cm_message)
                 open("master alive", 'w').write("F")
                 from main import scan
@@ -207,7 +204,7 @@ class HC(sensors.Sensor):
                 from listen import start_sense
                 start_sense(self.devices)
 
-
+    # send initial pattern by defualt
     def send_samples(self, ip):
         file = open(file_name)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

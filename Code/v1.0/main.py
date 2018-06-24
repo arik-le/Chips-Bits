@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-#   python main.py
 import subprocess
 
 # try to import this libraries of install it
@@ -163,7 +162,6 @@ def scan():
     #  append my device and sort by ip
     devices.append(iot_device(socket.gethostname(), auxiliary_functions.my_ip_address(), False))
     devices = sorted(devices, key=lambda iot_device: int(iot_device.ip.split('.')[3]))
-    # devices[0].master = True    #the lowest ip is the master
     find_master = False
     if devices[0].ip != auxiliary_functions.my_ip_address():
         for device in devices:
@@ -174,7 +172,7 @@ def scan():
                     device.master = True
                     find_master = True
                     master = devices.pop(devices.index(device))
-                    message = Message(device,None,YOU_ARE_THE_MASTER,"you are the master")
+                    message = Message(device,None,YOU_ARE_THE_MASTER,"You are the master")
                     auxiliary_functions.send_message(message)
                     break
         if not find_master:

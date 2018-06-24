@@ -54,6 +54,8 @@ def listen(devices,pid):
                         devices[0].master = False
                         devices=[master]+devices
                         open("master alive", 'w').write("F")
+                        for device in devices:
+                            print device
                         start_sense(devices)
                     elif devices[0] != master:
                         massage = Message(master,None,GET_FROM_MASTER,devices[0].ip+"|"+devices[0].name)
