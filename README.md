@@ -45,3 +45,6 @@ Please visit our wiki for furthur project info: [HERE](https://github.com/arik-l
 ### Project Diary and Scheudle
 Using [Trello app site](https://trello.com/b/3eGIbgko/project-schedule)
 
+### Project movie
+[Final Movie](https://github.com/arik-le/Chips-Bits/wiki/Final-Movie)
+
